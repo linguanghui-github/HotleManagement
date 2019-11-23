@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hotel.dao.RoomSetDao">
+<!-- 模糊查询  分页 -->
+	<select id="getRoomInfoSet" resultType="Room">
+	  SELECT r.*,a.attributeDetailsName AS guestRoomLevelName,b.attributeDetailsName AS roomName 
+    FROM room r INNER JOIN attributedetails a ON r.guestRoomLevelID=a.id 
+    INNER JOIN attributedetails b ON r.roomStateID=b.id   
+    WHERE roomNumber LIKE CONCAT('%',#{roomNumber,jdbcType=VARCHAR},'%') order by r.roomNumber ASC
+    LIMIT #{pageIndex},#{pageSize}
+	</select>
+	<!-- 查询总数 -->
+	<select id="getRoomCount" resultType="Integer">
+		SELECT COUNT(id) FROM `room`
+		<where>
+		<if test="roomNumber!=null and roomNumber!='' and roomNumber != 0">
+		and `roomNumber` LIKE CONCAT( '%',#{roomNumber},'%')
+		</if>
+		</where>
+	</select>
+	<insert id="addRoom" parameterType="Room">
+	INSERT INTO `room` VALUE(DEFAULT,#{guestRoomLevelID},#{roomStateID},#{roomNumber},#{roomAmount},
+#{standardPriceDay},#{standardPrice},#{maxDuration},#{firstDuration},#{firstPrice})
+	</insert>
+	<!-- 查询单个房间信息 -->
+	<select id="getRoom" resultType="Room">
+		 SELECT r.*,a.attributeDetailsName AS guestRoomLevelName,b.attributeDetailsName AS roomName 
+    FROM room r INNER JOIN attributedetails a ON r.guestRoomLevelID=a.id 
+    INNER JOIN attributedetails b ON r.roomStateID=b.id WHERE r.id=#{id}
+	</select>
+	<update id="updateRoom" parameterType="Room">
+	UPDATE `room` SET  `guestRoomLevelID`=#{guestRoomLevelID},`roomStateID`=#{roomStateID},
+`roomNumber`=#{roomNumber},`roomAmount`=#{roomAmount},`standardPriceDay`=#{standardPriceDay},
+`standardPrice`=#{standardPrice},`maxDuration`=#{maxDuration},`firstDuration`=#{firstDuration},
+`firstPrice`=#{firstPrice} where id=#{id}
+	</update>
+	<delete id="deleteRoom">
+		DELETE  FROM Room WHERE `id` in
+	 <foreach collection="array" index="index" item="listid" open="("
+    separator="," close=")">
+  #{listid}
+  </foreach>
+	
+	</delete>
+	  <select id="selectAll" resultType="Room">
+    SELECT r.*,a.attributeDetailsName AS guestRoomLevelName,b.attributeDetailsName AS roomName 
+    FROM room r INNER JOIN attributedetails a ON r.guestRoomLevelID=a.id 
+    INNER JOIN attributedetails b ON r.roomStateID=b.id   
+  </select>
+	
+	 
+  <!-- 非本派所用  安排房间时 需要改变当前房间的房态 -->
+  <update id="updateByIdToRoomState" parameterType="Room">
+      UPDATE room SET roomStateID=#{roomStateID,jdbcType=INTEGER}
+                   WHERE id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <select id="selectInformation" resultType="Room">
+    SELECT r.*,a.attributeDetailsName AS guestRoomLevelName,b.attributeDetailsName AS roomName 
+    FROM room r INNER JOIN attributedetails a ON r.guestRoomLevelID=a.id 
+    INNER JOIN attributedetails b ON r.roomStateID=b.id   
+    WHERE roomNumber like CONCAT('%',#{roomNumber,jdbcType=VARCHAR},'%') 
+    and r.roomStateID=1 order by r.roomNumber ASC
+  </select>
+ <!--  非本派所用  客服等级来查询房间信息 -->
+  <select id="levelSelectInformation" resultType="Room">
+    SELECT r.*,a.attributeDetailsName AS guestRoomLevelName,b.attributeDetailsName AS roomName 
+    FROM room r INNER JOIN attributedetails a ON r.guestRoomLevelID=a.id 
+    INNER JOIN attributedetails b ON r.roomStateID=b.id   
+    WHERE r.guestRoomLevelID = #{guestRoomLevelID,jdbcType=INTEGER}
+  </select>
+</mapper>

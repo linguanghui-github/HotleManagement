@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hotel.dao.StayRegisterDao">
+	<select id="count" resultType="StayRegisterVO">
+		select s.id from stayregister s
+		INNER JOIN depoit d ON s.id=d.stayRegisterID 
+		INNER JOIN attributedetails a ON d.payWayID=a.id
+		INNER JOIN receivetarget rt ON s.receiveTargetID=rt.id
+		INNER JOIN attributedetails ar ON rt.targetTypeID=ar.id
+		INNER JOIN room r ON s.roomID=r.id
+		INNER JOIN attributedetails b ON s.rentOutTypeID=b.id
+		INNER JOIN attributedetails c ON s.billUnitID=c.id
+		INNER JOIN `stayregisterdetails` AS sts ON s.`id`=sts.`stayRegisterID`
+		INNER JOIN `passenger` AS pss ON sts.`passengerID`=pss.`id` where 1=1 
+		<if test="start!=null and start!='' and  end!=null and  end!=''">
+			and DATE_FORMAT(s.payTime,'%Y-%m-%d')>=#{start} and  DATE_FORMAT(s.payTime,'%Y-%m-%d')&lt;#{end} 
+		</if>
+		GROUP BY sts.`id`
+	</select>
+<!-- 	<select id="list" resultMap="StayRegisterlist">
+		SELECT s.*,s.id as s_id, d.id as d_id,a.id as a_id,b.id as b_id,c.id as c_id,rt.id as rt_id,
+		r.id as r_id,sts.id as sts_id,pss.id as pss_id,ar.id as ar_id,d.*,ar.*,rt.*,r.*,
+		sts.*,pss.*
+		FROM stayregister s
+		INNER JOIN depoit d ON s.id=d.stayRegisterID 
+		INNER JOIN attributedetails a ON d.payWayID=a.id
+		INNER JOIN receivetarget rt ON s.receiveTargetID=rt.id
+		INNER JOIN attributedetails ar ON rt.targetTypeID=ar.id
+		INNER JOIN room r ON s.roomID=r.id
+		INNER JOIN attributedetails b ON s.rentOutTypeID=b.id
+		INNER JOIN attributedetails c ON s.billUnitID=c.id
+		INNER JOIN `stayregisterdetails` AS sts ON s.`id`=sts.`stayRegisterID`
+		INNER JOIN `passenger` AS pss ON sts.`passengerID`=pss.`id` where 1=1 
+		<if test="start!=null  and  start!=''  and  end!=null  and  end!=''">
+			and  s.registerTime=#{start} and s.payTime=#{end}
+		</if>
+		limit #{index},#{size}
+	</select> -->
+	
+	
+	<select id="list" resultType="StayRegisterVO">
+		SELECT *,sts.id as stsid FROM `stayregisterdetails` sts 
+		INNER JOIN `stayregister` s ON sts.`stayRegisterID`=s.`id`
+		INNER JOIN `room` r ON r.`id`=s.`roomID`
+		INNER JOIN `passenger` pss ON sts.`passengerID`=pss.`id`
+		INNER JOIN `receivetarget` rt ON s.`receiveTargetID`=rt.`id`
+		INNER JOIN `attributedetails` ar ON ar.`id`=rt.`targetTypeID`
+		where 1=1
+		<if test="start!=null and start!='' and  end!=null and  end!=''">
+			 and DATE_FORMAT(s.payTime,'%Y-%m-%d')>=#{start} and  DATE_FORMAT(s.payTime,'%Y-%m-%d')&lt;#{end} 
+		</if>
+		GROUP BY sts.`id` 
+		ORDER BY s.`payTime` DESC
+		limit #{index},#{size}
+	</select>
+	
+		
+	<select id="fjc" resultType="StayRegisterVO">
+		SELECT `roomNumber` FROM `stayregisterdetails` sts 
+		INNER JOIN `stayregister` s ON sts.`stayRegisterID`=s.`id` 
+		INNER JOIN `room` r ON r.`id`=s.`roomID`
+		INNER JOIN `passenger` pss ON sts.`passengerID`=pss.`id`  
+		WHERE s.`isBillID`=68
+		<if test="start!=null  and  start!=''  and  end!=null  and  end!=''">
+			 and DATE_FORMAT(s.payTime,'%Y-%m-%d')>=#{start} and  DATE_FORMAT(s.payTime,'%Y-%m-%d')&lt;#{end} 
+		</if>
+		 GROUP BY r.`roomNumber`
+	</select>
+	
+	<select id="zsrs" resultType="StayRegisterVO">
+		SELECT `name` FROM `stayregisterdetails` sts 
+		INNER JOIN `stayregister` s ON sts.`stayRegisterID`=s.`id` 
+		INNER JOIN `passenger` pss ON sts.`passengerID`=pss.`id`  
+		WHERE s.`isBillID`=68
+		<if test="start!=null  and  start!=''  and  end!=null  and  end!=''">
+			 and DATE_FORMAT(s.payTime,'%Y-%m-%d')>=#{start} and  DATE_FORMAT(s.payTime,'%Y-%m-%d')&lt;#{end} 
+		</if>
+		GROUP BY pss.`name`
+	</select>
+	
+	
+	<select id="xfje" resultType="StayRegisterVO">
+	SELECT con.`consumptionMoney` FROM `stayregisterdetails` sts 
+		INNER JOIN `stayregister` s ON sts.`stayRegisterID`=s.`id` 
+		INNER JOIN `room` r ON r.`id`=s.`roomID`
+		INNER JOIN `passenger` pss ON sts.`passengerID`=pss.`id`  
+		INNER JOIN `consumptiondetails` con ON con.`stayRegisterID`=s.`id`
+		WHERE s.`isBillID`=69 
+		<if test="start!=null  and  start!=''  and  end!=null  and  end!=''">
+			 and DATE_FORMAT(s.payTime,'%Y-%m-%d')>=#{start} and  DATE_FORMAT(s.payTime,'%Y-%m-%d')&lt;#{end} 
+		</if>
+		
+		GROUP BY s.`payTime`,r.`roomNumber`
+	</select>
+	
+	<select id="jzje" resultType="StayRegisterVO">
+		SELECT s.`sumConst` FROM `stayregisterdetails` sts 
+		INNER JOIN `stayregister` s ON sts.`stayRegisterID`=s.`id` 
+		INNER JOIN `room` r ON r.`id`=s.`roomID`
+		INNER JOIN `passenger` pss ON sts.`passengerID`=pss.`id`  
+		WHERE s.`isBillID`=69 
+		<if test="start!=null  and  start!=''  and  end!=null  and  end!=''">
+			 and DATE_FORMAT(s.payTime,'%Y-%m-%d')>=#{start} and  DATE_FORMAT(s.payTime,'%Y-%m-%d')&lt;#{end} 
+		</if> 
+		GROUP BY s.`payTime`,r.`roomNumber`
+	</select>
+		
+		
+		
+		<select id="selectOne" resultType="StayRegisterVO">
+		SELECT s.*, d.stayRegisterID,a.id ,b.id ,c.id ,rt.id ,
+		r.id ,sts.stayRegisterID,sts.id as stsid,pss.id ,ar.id ,d.*,ar.*,rt.*,r.*,
+		sts.*,pss.*,e.attributeDetailsName as e_attributeDetailsName,pss.contactPhoneNumber as contactPhoneNumbers,
+		ats.attributeDetailsName as ats_attributeDetailsName,b.attributeDetailsName as b_attributeDetailsName,a.attributeDetailsName as a_attributeDetailsName,
+		c.attributeDetailsName as c_attributeDetailsName 
+		FROM `stayregisterdetails` sts 
+		INNER JOIN stayRegister AS s ON s.`id`=sts.`stayRegisterID`
+		INNER JOIN depoit d ON s.id=d.stayRegisterID 
+		INNER JOIN attributedetails a ON d.payWayID=a.id
+		INNER JOIN receivetarget rt ON s.receiveTargetID=rt.id
+		INNER JOIN attributedetails ar ON rt.targetTypeID=ar.id
+		INNER JOIN room r ON s.roomID=r.id 
+		INNER JOIN attributedetails e on r.guestRoomLevelID=e.id 
+		INNER JOIN attributedetails b ON s.rentOutTypeID=b.id
+		INNER JOIN attributedetails c ON s.billUnitID=c.id
+		INNER JOIN `passenger` AS pss ON sts.`passengerID`=pss.`id` 
+		INNER JOIN `attributedetails` AS ats ON s.`passengerTypeID`=ats.id 
+		where 1=1 and sts.id=#{stsid} 
+		GROUP BY sts.`id` 
+	</select>
+	
+	<select id="selectTwo" resultMap="StayRegisterDetailslist">
+		SELECT sts.id as sts_id,s.id as s_id,con.id as con_id,com.id as com_id,a.id as a_id,b.id as b_id,
+		a.attributeDetailsName as a_attributeDetailsName,b.attributeDetailsName as b_attributeDetailsName,
+		a.attributeID as a_attributeID,b.attributeID as b_attributeID,sts.*,s.*,con.*,com.*,a.*,b.*  
+		FROM `stayregisterdetails` sts 
+		INNER JOIN `stayregister` AS s ON sts.`stayRegisterID`=s.`id` 
+		INNER JOIN `consumptiondetails` AS con ON con.`stayRegisterID`=s.`id`
+		INNER JOIN `commodity` AS com ON con.`commodityID`=com.`id` 
+		INNER JOIN attributedetails AS a ON a.id=com.commodityTypeID 
+		INNER JOIN attributedetails AS b ON b.id=com.uOMID 
+		WHERE sts.id=#{stsid}
+	</select>
+	
+	
+<resultMap type="StayRegisterDetailsVo" id="StayRegisterDetailslist">
+	<id property="id" column="sts_id"/>
+	<association property="stayRegister" javaType="StayRegisters">
+		<id property="id" column="s_id"/>
+		<association property="consumptionDetails" javaType="ConsumptionDetailss">
+			<id property="id" column="con_id"/>
+			<association property="commodity" javaType="Commoditys">
+				<id property="id" column="com_id"/>
+				<association property="a" javaType="AttributeDetails">
+					<id  property="id" column="a_id"/>
+					<result property="attributeID" column="a_attributeID"/>
+					<result property="attributeDetailsName" column="a_attributeDetailsName"/>
+				</association>
+				<association property="b" javaType="AttributeDetails">
+					<id  property="id" column="b_id"/>
+					<result property="attributeID" column="b_attributeID"/>
+					<result property="attributeDetailsName" column="b_attributeDetailsName"/>
+				</association>
+			</association>
+		</association>
+	</association>
+</resultMap>
+</mapper>

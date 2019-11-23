@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+		
+		<!-- 加载属性文件  -->
+	<bean class=" org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:datasource.properties</value>
+		</property>
+	</bean>
+	<!-- 配置连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		 <property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations">
+			<list> 
+				<value>classpath:cn/hotel/mapper/**/*Mapper.xml</value>
+			</list>
+		</property>
+		<!-- 加载mybatis配置文件  -->
+		<property name="configLocation">
+			<value>classpath:mybatis3.2.2-config.xml</value>
+		</property>
+	</bean>
+	
+		<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+		<property name="basePackage" value="cn.hotel.dao" />
+	</bean>
+	<!-- 声明式事务，对 业务逻辑层 的功能（方法）采用什么事务策略  能读能写、能读不能写、不能读不能写  -->
+	<!-- 1.指定事务管理器 -->
+	<bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 添加事务支持 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- 扫描IOC注解元素 -->
+	<context:component-scan base-package="cn.hotel.service.impl" />
+</beans>

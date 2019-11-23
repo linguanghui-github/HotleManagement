@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.hotel.dao.PassengerDao" >
+
+
+<!--   查询所有数据  非本派所用 -->
+   <select id="selectAll" resultType="PassengerPo">
+    SELECT p.*,a.attributeDetailsName AS papersName,b.attributeDetailsName AS educationDegreeName,
+     c.attributeDetailsName AS genderName,d.attributeDetailsName AS passengerLevelName,
+     e.attributeDetailsName AS nationName,f.attributeDetailsName AS thingReasonName
+     FROM passenger p INNER JOIN attributedetails a ON p.papersID=a.id 
+     INNER JOIN attributedetails b ON p.educationDegreeID=b.id  INNER JOIN attributedetails c ON p.genderID=c.id 
+     INNER JOIN attributedetails d ON p.passengerLevelID=d.id INNER JOIN attributedetails e ON p.nationID=e.id
+     INNER JOIN attributedetails f ON p.thingReasonID=f.id 
+   </select>
+   
+<!--  模糊查询 运用 Ajax 非分页 -->
+   <select id="selectAjaxList" resultType="PassengerPo">
+    SELECT p.*,a.attributeDetailsName AS papersName,b.attributeDetailsName AS educationDegreeName,
+     c.attributeDetailsName AS genderName,d.attributeDetailsName AS passengerLevelName,
+     e.attributeDetailsName AS nationName,f.attributeDetailsName AS thingReasonName
+     FROM passenger p INNER JOIN attributedetails a ON p.papersID=a.id 
+     INNER JOIN attributedetails b ON p.educationDegreeID=b.id  INNER JOIN attributedetails c ON p.genderID=c.id 
+     INNER JOIN attributedetails d ON p.passengerLevelID=d.id INNER JOIN attributedetails e ON p.nationID=e.id
+     INNER JOIN attributedetails f ON p.thingReasonID=f.id 
+      WHERE name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+   </select>   
+   <!--   修改要用的精确查询 -->
+   <select id="selectById" resultType="PassengerPo" parameterType="java.lang.Integer">
+    select * from passenger where id=#{id,jdbcType=INTEGER}
+   </select>    
+   
+   <!--   新增 -->
+  <insert id="insertAll" useGeneratedKeys="true" keyProperty="id" parameterType="PassengerPo" >
+       INSERT INTO passenger (papersID,educationDegreeID,genderID,passengerLevelID,nationID,
+     thingReasonID,name,papersNumber,birthDate,licenceIssuingAuthorty,unitsOrAddress,
+     papersValidity,profession,whereAreFrom,whereToGo,contactPhoneNumber,remarks)
+     values (#{papersID,jdbcType=INTEGER},
+		     #{educationDegreeID,jdbcType=INTEGER},
+		     #{genderID,jdbcType=INTEGER},
+		     #{passengerLevelID,jdbcType=INTEGER},
+		     #{nationID,jdbcType=INTEGER},
+		     #{thingReasonID,jdbcType=INTEGER},
+             #{name,jdbcType=VARCHAR},
+             #{papersNumber,jdbcType=VARCHAR},
+             #{birthDate,jdbcType=VARCHAR},
+             #{licenceIssuingAuthorty,jdbcType=VARCHAR},
+             #{unitsOrAddress,jdbcType=VARCHAR},
+             #{papersValidity,jdbcType=VARCHAR},
+             #{profession,jdbcType=VARCHAR},
+             #{whereAreFrom,jdbcType=VARCHAR},
+             #{whereToGo,jdbcType=VARCHAR},
+             #{contactPhoneNumber,jdbcType=VARCHAR},
+             #{remarks,jdbcType=VARCHAR})
+            
+  </insert>
+  
+  <!--    修改 -->
+   <update id="updateById" parameterType="PassengerPo">
+      UPDATE passenger SET papersID=#{papersID,jdbcType=INTEGER},
+					      educationDegreeID=#{educationDegreeID,jdbcType=INTEGER},
+					      genderID=#{genderID,jdbcType=INTEGER},
+					      passengerLevelID=#{passengerLevelID,jdbcType=INTEGER},
+					      nationID=#{nationID,jdbcType=INTEGER},
+					      thingReasonID=#{thingReasonID,jdbcType=INTEGER},
+			              name=#{name,jdbcType=VARCHAR},
+			              papersNumber=#{papersNumber,jdbcType=VARCHAR},
+			              birthDate=#{birthDate,jdbcType=VARCHAR},
+			              licenceIssuingAuthorty=#{licenceIssuingAuthorty,jdbcType=VARCHAR},
+			              unitsOrAddress=#{unitsOrAddress,jdbcType=VARCHAR},
+			              papersValidity=#{papersValidity,jdbcType=VARCHAR},
+			              profession=#{profession,jdbcType=VARCHAR},
+			              whereAreFrom=#{whereAreFrom,jdbcType=VARCHAR},
+			              whereToGo=#{whereToGo,jdbcType=VARCHAR},
+			              contactPhoneNumber=#{contactPhoneNumber,jdbcType=VARCHAR},
+			              remarks=#{remarks,jdbcType=VARCHAR}
+                   WHERE id = #{id,jdbcType=INTEGER}
+   </update>
+   
+   <!-- 刘成 -->
+   
+   <select id="allpass" resultMap="passengerMap">
+		SELECT * FROM passenger
+		<if test="txtname!=null and txtname!=''">
+		where name=#{txtname}
+		</if>
+	</select>
+	<select id="allpassenger" resultMap="passengerMap">
+		SELECT * FROM passenger
+		<if test="txtname!=null and txtname!=''">
+			where name like CONCAT('%',#{txtname},'%')
+		</if>
+		LIMIT #{index},#{index01}
+	</select>
+	<select id="size" resultType="Integer">
+		select count(*) from passenger
+		<if test="txtname!=null and txtname!=''">
+
+			where name like CONCAT('%',#{txtname},'%')
+		</if>
+	</select>
+	<select id="selectpass" resultMap="passengerMap">
+		select * from passenger where
+		id=#{id}
+	</select>
+	<select id="selectpasspapers" resultType="cn.hotel.entity.Passenger">
+		select * from passenger where
+		papersNumber=#{papersNumber}
+	</select>
+	<resultMap type="cn.hotel.entity.Passenger" id="passengerMap">
+		<id column="id" property="id" />
+	</resultMap>
+	<delete id="delectpassenger">
+		DELETE FROM `passenger` WHERE id=#{id}
+	</delete>
+	<insert id="addpassenger" parameterType="cn.hotel.entity.Passenger">
+		INSERT INTO passenger
+		VALUE(DEFAULT,#{papersID},#{educationDegreeID}
+		,#{genderID},#{passengerLevelID},#{nationID},#{thingReasonID},#{name},
+		#{papersNumber},#{birthDate},#{licenceIssuingAuthorty},#{unitsOrAddress}
+		,#{papersValidity},#{profession},#{whereAreFrom},#{whereToGo}
+		,#{contactPhoneNumber},#{remarks})
+	</insert>
+	<update id="updatepass" parameterType="cn.hotel.entity.Passenger">
+		UPDATE `passenger` SET
+		`papersID`=#{papersID},`educationDegreeID`=#{educationDegreeID},
+		`genderID`=#{genderID},`passengerLevelID`=#{passengerLevelID},
+		`nationID`=#{nationID},`thingReasonID`=#{thingReasonID},`name`=#{name},
+		`papersNumber`=#{papersNumber},`birthDate`=#{birthDate},`licenceIssuingAuthorty`=
+		#{licenceIssuingAuthorty},`unitsOrAddress`=#{unitsOrAddress},
+		`papersValidity`=#{papersValidity},`profession`=#{profession},
+		`whereAreFrom`=#{whereAreFrom},`whereToGo`=#{whereToGo},
+		`contactPhoneNumber`=#{contactPhoneNumber},`remarks`=#{remarks}
+		WHERE
+		id=#{id}
+	</update>
+   
+</mapper>

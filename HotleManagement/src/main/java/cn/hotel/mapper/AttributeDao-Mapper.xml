@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hotel.dao.AttributeDao">
+
+	<!-- 根据id查询各个类型 -->
+	<select id="getAttributeDetails" resultType="AttributeDetails">
+		SELECT * FROM
+		`attributedetails` WHERE `attributeID`=#{aId}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="addAttribute" parameterType="AttributeDetails">
+		INSERT INTO `attributedetails` VALUE(NULL,3,#{attributeDetailsName})
+	</insert>
+
+	<!-- 删除 支持删除n个 -->
+	<delete id="deleteAttribute">
+		DELETE FROM `attributedetails` WHERE id in
+		<foreach collection="array" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 查看客房等级 -->
+	<select id="selectGuestRoomLevel" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a
+		INNER JOIN attributedetails b ON a.id =b.attributeID WHERE a.id=2
+	</select>
+
+	<!-- 查看房间状态 -->
+	<select id="selectRoomState" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=1
+	</select>
+
+	<!-- 查看商品类别 -->
+	<select id="selectCommodityType" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a
+		INNER JOIN attributedetails b ON a.id =b.attributeID WHERE a.id=3
+	</select>
+
+	<!-- 查看计量单位 -->
+	<select id="selectUOM" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=15
+	</select>
+
+	<!-- 查看对象类别 -->
+	<select id="selectTargetType" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=14
+	</select>
+
+	<!-- 查看性别 -->
+	<select id="selectGender" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=8
+	</select>
+
+	<!-- 查看民族 -->
+	<select id="selectNation" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=9
+	</select>
+
+	<!-- 查看旅客级别 -->
+	<select id="selectPassengerLevel" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a
+		INNER JOIN attributedetails b ON a.id =b.attributeID WHERE a.id=13
+	</select>
+
+	<!-- 查看文化程度 -->
+	<select id="selectEducationDegree" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a
+		INNER JOIN attributedetails b ON a.id =b.attributeID WHERE a.id=11
+	</select>
+
+	<!-- 查看证件类型 -->
+	<select id="selectPapers" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=10
+	</select>
+
+	<!-- 查看事由 -->
+	<select id="selectThingReason" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=12
+	</select>
+
+	<!-- 查看旅客类别 -->
+	<select id="selectPassengerType" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a
+		INNER JOIN attributedetails b ON a.id =b.attributeID WHERE a.id=7
+	</select>
+
+	<!-- 查看结账单位 -->
+	<select id="selectBillUnit" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=6
+	</select>
+
+	<!-- 查看结账方式 -->
+	<select id="selectPayWay" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=4
+	</select>
+
+	<!-- 查看出租方式 -->
+	<select id="selectRentOutType" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=5
+	</select>
+
+	<!-- 查看结账否 -->
+	<select id="selectIsPay" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a INNER JOIN
+		attributedetails b ON a.id =b.attributeID WHERE a.id=17
+	</select>
+
+	<!-- 查看预订状态 -->
+	<select id="selectPredetermineState" resultType="AttributePo">
+		SELECT a.*,b.id AS far_id,b.attributeDetailsName FROM attribute a
+		INNER JOIN attributedetails b ON a.id =b.attributeID WHERE a.id=16
+	</select>
+
+</mapper>
