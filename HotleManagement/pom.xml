@@ -16,7 +16,7 @@
   <!--设置相关版本属性-->
   <properties>
     <!--spring版本-->
-    <spring.version>5.0.2.RELEASE</spring.version>
+    <spring.version>6.0.0</spring.version>
     <!--日志版本-->
     <slf4j.version>1.6.6</slf4j.version>
     <log4j.version>1.2.12</log4j.version>
